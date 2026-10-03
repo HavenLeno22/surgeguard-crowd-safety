@@ -47,6 +47,8 @@ coverage/
 *.mp4
 *.avi
 *.mkv
+# The landing hero's brand footage is a committed asset, not generated data.
+!frontend/public/media/*.mp4
 
 # --- OS / editors ---------------------------------------------------------
 .DS_Store
