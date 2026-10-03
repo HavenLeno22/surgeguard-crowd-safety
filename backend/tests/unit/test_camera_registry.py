@@ -40,13 +40,13 @@ PRIMARY = CameraSeed(
     index=1,
     camera_id="cam-01",
     name="Main Entrance",
-    url="http://172.30.213.172:4747/video",
+    url="http://192.0.2.17:4747/video",
 )
 TEAM = CameraSeed(
     index=2,
     camera_id="cam-02",
     name="Team Camera",
-    url="http://172.18.225.59:4747/video",
+    url="http://192.0.2.14:4747/video",
     role=CameraRole.QUEUE,
 )
 
@@ -65,7 +65,7 @@ def test_environment_cameras_resolve_in_order_with_the_primary_first(tmp_path: P
     assert primary.is_primary and not team.is_primary
     assert team.origin is CameraOrigin.ENVIRONMENT
     assert team.url_source is UrlSource.ENVIRONMENT
-    assert team.stream_url == "http://172.18.225.59:4747/video"
+    assert team.stream_url == "http://192.0.2.14:4747/video"
     assert team.role is CameraRole.QUEUE
     # A camera with no declared coverage area watches an area of its own.
     assert team.coverage_area == "cam-02"
@@ -85,7 +85,7 @@ def test_an_operator_camera_is_saved_and_survives_a_restart(tmp_path: Path) -> N
         CameraSpec(
             camera_id="CAM-03",
             name="Counter View",
-            stream_url="192.168.1.40:4747",
+            stream_url="192.0.2.19:4747",
             role=CameraRole.SERVICE,
         )
     )
@@ -93,7 +93,7 @@ def test_an_operator_camera_is_saved_and_survives_a_restart(tmp_path: Path) -> N
     assert added.camera_id == "cam-03"
     assert added.origin is CameraOrigin.OPERATOR
     assert added.url_source is UrlSource.REGISTRY
-    assert added.stream_url == "http://192.168.1.40:4747/video"
+    assert added.stream_url == "http://192.0.2.19:4747/video"
     assert path.exists()
 
     reloaded = make_registry(path)
@@ -106,7 +106,7 @@ def test_an_operator_camera_is_saved_and_survives_a_restart(tmp_path: Path) -> N
 
 def test_an_omitted_id_is_assigned_after_the_highest_existing_one(tmp_path: Path) -> None:
     registry = make_registry(tmp_path / "cameras.json")
-    added = registry.add(CameraSpec(name="Overflow", stream_url="http://10.0.0.9:4747/video"))
+    added = registry.add(CameraSpec(name="Overflow", stream_url="http://192.0.2.13:4747/video"))
     assert added.camera_id == "cam-03"
 
 
@@ -121,26 +121,26 @@ def test_editing_an_environment_camera_overrides_only_what_changed(tmp_path: Pat
     registry = make_registry(path)
 
     updated = registry.update(
-        "cam-02", CameraChanges(stream_url="http://172.18.230.10:4747/video")
+        "cam-02", CameraChanges(stream_url="http://192.0.2.16:4747/video")
     )
 
-    assert updated.stream_url == "http://172.18.230.10:4747/video"
+    assert updated.stream_url == "http://192.0.2.16:4747/video"
     assert updated.url_source is UrlSource.REGISTRY
     assert updated.name == "Team Camera", "fields not edited keep their environment value"
 
     # The edit survives a restart, and wins over the environment value even if
     # the environment still carries the old address.
     reloaded = make_registry(path)
-    assert reloaded.get("cam-02").stream_url == "http://172.18.230.10:4747/video"
+    assert reloaded.get("cam-02").stream_url == "http://192.0.2.16:4747/video"
 
 
 def test_clearing_an_overridden_url_returns_to_the_environment_value(tmp_path: Path) -> None:
     registry = make_registry(tmp_path / "cameras.json")
-    registry.update("cam-02", CameraChanges(stream_url="http://172.18.230.10:4747/video"))
+    registry.update("cam-02", CameraChanges(stream_url="http://192.0.2.16:4747/video"))
 
     restored = registry.update("cam-02", CameraChanges(stream_url=None))
 
-    assert restored.stream_url == "http://172.18.225.59:4747/video"
+    assert restored.stream_url == "http://192.0.2.14:4747/video"
     assert restored.url_source is UrlSource.ENVIRONMENT
 
 
@@ -158,11 +158,11 @@ def test_adding_a_removed_environment_camera_restores_it(tmp_path: Path) -> None
     registry.remove("cam-02")
 
     restored = registry.add(
-        CameraSpec(camera_id="cam-02", name="Queue Side", stream_url="http://172.18.225.60:4747/video")
+        CameraSpec(camera_id="cam-02", name="Queue Side", stream_url="http://192.0.2.15:4747/video")
     )
 
     assert restored.name == "Queue Side"
-    assert restored.stream_url == "http://172.18.225.60:4747/video"
+    assert restored.stream_url == "http://192.0.2.15:4747/video"
     assert restored.origin is CameraOrigin.ENVIRONMENT
 
 
@@ -224,11 +224,11 @@ def test_saving_leaves_no_temporary_files(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [
-        ("172.18.225.59", "http://172.18.225.59:4747/video"),
-        ("172.18.225.59:4747", "http://172.18.225.59:4747/video"),
-        ("172.18.225.59:8080/video", "http://172.18.225.59:8080/video"),
-        (" http://172.18.225.59:4747/video ", "http://172.18.225.59:4747/video"),
-        ("rtsp://user:pass@10.0.0.4:554/stream1", "rtsp://user:pass@10.0.0.4:554/stream1"),
+        ("192.0.2.14", "http://192.0.2.14:4747/video"),
+        ("192.0.2.14:4747", "http://192.0.2.14:4747/video"),
+        ("192.0.2.14:8080/video", "http://192.0.2.14:8080/video"),
+        (" http://192.0.2.14:4747/video ", "http://192.0.2.14:4747/video"),
+        ("rtsp://user:pass@192.0.2.10:554/stream1", "rtsp://user:pass@192.0.2.10:554/stream1"),
         ("0", "0"),
         ("", None),
         (None, None),
@@ -238,7 +238,7 @@ def test_stream_urls_are_normalised(raw: str | None, expected: str | None) -> No
     assert normalise_stream_url(raw) == expected
 
 
-@pytest.mark.parametrize("raw", ["ftp://10.0.0.4/video", "not a camera", "http://"])
+@pytest.mark.parametrize("raw", ["ftp://192.0.2.10/video", "not a camera", "http://"])
 def test_unusable_stream_urls_are_rejected(raw: str) -> None:
     with pytest.raises(ValueError, match="stream"):
         normalise_stream_url(raw)

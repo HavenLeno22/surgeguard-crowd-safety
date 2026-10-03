@@ -73,7 +73,7 @@ def test_a_recovering_camera_prefers_the_diagnosis_over_the_generic_reason() -> 
     status, detail = status_of(
         worker_state=PerceptionWorkerState.RECOVERING,
         worker_detail="The camera or video source could not be opened. Retrying in 4s.",
-        diagnosis_detail="DroidCam at 172.18.225.59:4747 is busy: another client is connected.",
+        diagnosis_detail="DroidCam at 192.0.2.14:4747 is busy: another client is connected.",
     )
     assert status is CameraConnectionStatus.RECOVERING
     assert "busy" in detail

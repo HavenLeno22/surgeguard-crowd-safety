@@ -39,7 +39,7 @@ def test_the_primary_camera_is_described_by_the_existing_settings() -> None:
         camera_id="cam-01",
         camera_name="Main Entrance",
         camera_location="Hall A",
-        live_camera_device="http://10.0.0.5:4747/video",
+        live_camera_device="http://192.0.2.11:4747/video",
     )
 
     primary = settings.primary_camera_seed
@@ -47,7 +47,7 @@ def test_the_primary_camera_is_described_by_the_existing_settings() -> None:
     assert primary.camera_id == "cam-01"
     assert primary.name == "Main Entrance"
     assert primary.location == "Hall A"
-    assert primary.url == "http://10.0.0.5:4747/video"
+    assert primary.url == "http://192.0.2.11:4747/video"
     assert settings.additional_cameras == ()
     assert [seed.camera_id for seed in settings.camera_seeds] == ["cam-01"]
 
@@ -57,7 +57,7 @@ def test_an_indexed_camera_is_read_from_the_process_environment(
 ) -> None:
     monkeypatch.setenv("SURGEGUARD_CAMERA_2_ID", "CAM-02")
     monkeypatch.setenv("SURGEGUARD_CAMERA_2_NAME", "Team Camera")
-    monkeypatch.setenv("SURGEGUARD_CAMERA_2_URL", "http://172.18.225.59:4747/video")
+    monkeypatch.setenv("SURGEGUARD_CAMERA_2_URL", "http://192.0.2.14:4747/video")
     monkeypatch.setenv("SURGEGUARD_CAMERA_2_ROLE", "QUEUE")
 
     settings = Settings(_env_file=None)
@@ -68,7 +68,7 @@ def test_an_indexed_camera_is_read_from_the_process_environment(
     # the interface is free to display them in upper case.
     assert seed.camera_id == "cam-02"
     assert seed.name == "Team Camera"
-    assert seed.url == "http://172.18.225.59:4747/video"
+    assert seed.url == "http://192.0.2.14:4747/video"
     assert seed.role is CameraRole.QUEUE
     assert seed.enabled is True
 
@@ -77,7 +77,7 @@ def test_an_indexed_camera_is_read_from_a_dotenv_file(tmp_path: Path) -> None:
     env_file = tmp_path / ".env"
     env_file.write_text(
         "SURGEGUARD_CAMERA_3_NAME=Counter View\n"
-        "SURGEGUARD_CAMERA_3_URL=http://192.168.1.40:4747/video\n"
+        "SURGEGUARD_CAMERA_3_URL=http://192.0.2.19:4747/video\n"
         "SURGEGUARD_CAMERA_3_ENABLED=false\n",
         encoding="utf-8",
     )

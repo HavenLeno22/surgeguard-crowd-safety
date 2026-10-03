@@ -150,7 +150,7 @@ async def test_an_operator_can_watch_but_not_reconfigure(
 
     assert (await auth_client.get("/api/v1/cameras")).status_code == 200
     add = await auth_client.post(
-        "/api/v1/cameras", json={"name": "Concourse East", "stream_url": "10.0.0.8:4747"}
+        "/api/v1/cameras", json={"name": "Concourse East", "stream_url": "192.0.2.12:4747"}
     )
     assert add.status_code == 403
     assert add.json()["error_code"] == "FORBIDDEN"

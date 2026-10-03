@@ -61,14 +61,14 @@ def test_a_key_is_locked_after_the_allowed_failures_until_the_window_passes() ->
     limiter = LoginRateLimiter(max_failures=3, window_seconds=60, clock=clock)
 
     for _ in range(3):
-        assert limiter.check("10.0.0.5|ops@venue.org") is None
-        limiter.record_failure("10.0.0.5|ops@venue.org")
+        assert limiter.check("192.0.2.11|ops@venue.org") is None
+        limiter.record_failure("192.0.2.11|ops@venue.org")
 
-    wait = limiter.check("10.0.0.5|ops@venue.org")
+    wait = limiter.check("192.0.2.11|ops@venue.org")
     assert wait is not None and 0 < wait <= 60
 
     clock.advance(61)
-    assert limiter.check("10.0.0.5|ops@venue.org") is None
+    assert limiter.check("192.0.2.11|ops@venue.org") is None
 
 
 def test_other_keys_are_unaffected_and_reset_clears_a_key() -> None:

@@ -37,7 +37,7 @@ from app.workers.perception_worker import PerceptionWorkerState
 from ..conftest import make_perception_result
 from ..unit.test_camera_probe import _FakeDroidCam
 
-TEAM_CAMERA_URL = "http://172.18.225.59:4747/video"
+TEAM_CAMERA_URL = "http://192.0.2.14:4747/video"
 
 
 @pytest.fixture
@@ -56,7 +56,7 @@ def settings(tmp_path: Path) -> Settings:
         camera_registry_path=tmp_path / "cameras.json",
         topology_path=tmp_path / "topology.json",
         camera_name="Main Entrance",
-        live_camera_device="http://172.30.213.172:4747/video",
+        live_camera_device="http://192.0.2.17:4747/video",
         additional_cameras=(
             CameraSeed(
                 index=2,
@@ -141,13 +141,13 @@ class TestChanges:
     ) -> None:
         response = await client.post(
             "/api/v1/cameras",
-            json={"name": "Counter View", "stream_url": "192.168.1.40:4747", "role": "SERVICE"},
+            json={"name": "Counter View", "stream_url": "192.0.2.19:4747", "role": "SERVICE"},
         )
 
         assert response.status_code == 201
         added = response.json()["data"]
         assert added["camera_id"] == "cam-03"
-        assert added["stream_url"] == "http://192.168.1.40:4747/video"
+        assert added["stream_url"] == "http://192.0.2.19:4747/video"
         assert added["origin"] == "OPERATOR"
         assert settings.camera_registry_path.exists()
 
@@ -160,7 +160,7 @@ class TestChanges:
 
     async def test_an_unusable_address_is_rejected(self, client: AsyncClient) -> None:
         response = await client.post(
-            "/api/v1/cameras", json={"name": "Bad", "stream_url": "ftp://10.0.0.4/video"}
+            "/api/v1/cameras", json={"name": "Bad", "stream_url": "ftp://192.0.2.10/video"}
         )
         assert response.status_code == 400
 
@@ -168,12 +168,12 @@ class TestChanges:
         self, client: AsyncClient
     ) -> None:
         response = await client.patch(
-            "/api/v1/cameras/cam-02", json={"stream_url": "172.18.230.10"}
+            "/api/v1/cameras/cam-02", json={"stream_url": "192.0.2.16"}
         )
 
         assert response.status_code == 200
         updated = response.json()["data"]
-        assert updated["stream_url"] == "http://172.18.230.10:4747/video"
+        assert updated["stream_url"] == "http://192.0.2.16:4747/video"
         assert updated["url_source"] == "REGISTRY"
 
     async def test_a_name_cannot_be_cleared(self, client: AsyncClient) -> None:

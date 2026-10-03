@@ -48,8 +48,8 @@ _HOST_ONLY = re.compile(
 def mask_credentials(url: str | None) -> str | None:
     """Hide a password embedded in a stream address before it is displayed.
 
-    ``rtsp://admin:secret@10.0.0.4/stream`` is shown as
-    ``rtsp://admin:***@10.0.0.4/stream``. DroidCam addresses carry no
+    ``rtsp://admin:secret@192.0.2.10/stream`` is shown as
+    ``rtsp://admin:***@192.0.2.10/stream``. DroidCam addresses carry no
     credentials and pass through unchanged.
     """
     if not url:
@@ -106,7 +106,7 @@ def normalise_stream_url(value: str | None) -> str | None:
     if host_match is None:
         raise ValueError(
             f"{value!r} is not a usable stream address: expected a URL such as "
-            "http://192.168.1.20:4747/video, or a DroidCam IP and port"
+            "http://192.0.2.18:4747/video, or a DroidCam IP and port"
         )
     port = host_match.group("port") or str(DROIDCAM_DEFAULT_PORT)
     path = host_match.group("path") or DROIDCAM_DEFAULT_PATH

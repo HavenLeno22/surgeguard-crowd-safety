@@ -179,9 +179,9 @@ def test_a_missing_source_fails_to_open(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("url", "expected"),
     [
-        ("http://172.18.225.59:4747/video", ("172.18.225.59", 4747)),
+        ("http://192.0.2.14:4747/video", ("192.0.2.14", 4747)),
         ("HTTP://Phone.Local/video", ("phone.local", 80)),
-        ("rtsp://10.0.0.4/stream", ("10.0.0.4", 554)),
+        ("rtsp://192.0.2.10/stream", ("192.0.2.10", 554)),
         ("0", None),
     ],
 )
