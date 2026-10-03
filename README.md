@@ -10,7 +10,12 @@ and buzzer.
 
 It is a full stack: a GPU-accelerated AI pipeline (YOLO + ByteTrack), a FastAPI
 backend with authentication, real-time WebSockets and persisted history, a React
-Command Center, and Arduino alert hardware.
+Command Center, a phone app for security staff, and Arduino alert hardware.
+
+**Winner, Implementation Category at Sensora 2.0** (graVITas '26, VIT Vellore,
+September 2026). Built by Haven Leno J, Manoj Kanna J and Yakash Pandi A.
+
+![SurgeGuard landing page](docs/screenshots/landing.webp)
 
 ---
 
@@ -22,11 +27,13 @@ Command Center, and Arduino alert hardware.
 - [Tech stack](#tech-stack)
 - [Getting started](#getting-started)
 - [The Command Center](#the-command-center)
+- [Security alert app](#security-alert-app)
 - [Alert hardware](#alert-hardware)
 - [Security](#security)
 - [Testing](#testing)
 - [Known limitations](#known-limitations)
 - [Further reading](#further-reading)
+- [Team](#team)
 
 ---
 
@@ -134,6 +141,8 @@ ai/          AI pipeline package: perception, analysis, stability (CSI), evidenc
              forecast, queue, site, intelligence, contracts
 backend/     FastAPI app, Alembic migrations, tests, .env.example
 frontend/    React 19 + Vite landing page and Command Center, .env.example
+security-alert-app/
+             Phone-first PWA for security staff (alerts, acknowledge, respond)
 hardware/    Arduino firmware (surgeguard_alert.ino) and wiring / protocol docs
 scripts/     run_perception.py, droidcam_emulator.py, make_placeholder_clip.py,
              surgeguard_supervisor.py
@@ -144,7 +153,8 @@ data/        Runtime data (created on first run: model weights, camera registry,
 
 Each part has its own README with the details:
 [`ai/README.md`](ai/README.md), [`backend/README.md`](backend/README.md),
-[`frontend/README.md`](frontend/README.md) and
+[`frontend/README.md`](frontend/README.md),
+[`security-alert-app/README.md`](security-alert-app/README.md) and
 [`hardware/README.md`](hardware/README.md).
 
 ---
@@ -271,7 +281,7 @@ python scripts/droidcam_emulator.py --port 4801 --video <clip>
 
 | Route | What it shows |
 |---|---|
-| `/` | Landing page, with an illustrative in-browser simulation that computes the real CSI formula and is clearly labelled as not live data |
+| `/` | Landing page with a looping video hero and an interactive explainer that computes the real CSI formula from sliders (not live data) |
 | `/command-center` | Status bar, the focused live stream with overlay layers, the CSI instrument with each indicator's contribution, the OIR with operator actions, evidence, queue now/next/do, site alerts, session trends and the live timeline |
 | `/site` | Overlap-aware headcount, per-camera summaries, flow map, hotspots, time to pressure, forecasts and staffing plan |
 | `/cameras`, `/cameras/:id` | Camera network, adding and testing cameras, stream, device and pipeline metrics, the zone editor (draw polygons on a snapshot), counters, retry |
@@ -307,12 +317,35 @@ page, sign-in and the app.
 
 ---
 
+## Security alert app
+
+A phone-first app for security staff. When the backend reports a **WARNING** or
+**CRITICAL** situation on any camera, the app shows it at once, notifies the
+guard, and lets them **Acknowledge**, mark **Responding**, or **Resolve** it.
+Each response goes back to the backend and is recorded on the timeline. The app
+has no detection of its own: it only shows what the backend reports.
+
+![Security alert app: alert list and alert detail](docs/screenshots/security-alert-app.webp)
+
+```bash
+cd security-alert-app
+npm install
+npm run dev        # http://localhost:5190, proxies /api and /ws to the backend
+```
+
+Details, including how alert levels map to backend states:
+[`security-alert-app/README.md`](security-alert-app/README.md).
+
+---
+
 ## Alert hardware
 
 An Arduino Uno, an RGB LED and a buzzer show the site's live Operational Status
 over USB serial. The backend decides what to show, and the Arduino only displays
 it. With several cameras, the most urgent current camera decides. Offline or
 stale cameras are left out.
+
+<img src="docs/screenshots/alert-hardware.webp" alt="Arduino Uno on a breadboard with the RGB LED and buzzer" width="420">
 
 | Level | When | LED | Buzzer |
 |---|---|---|---|
@@ -425,7 +458,14 @@ integration suites, the system was checked end to end:
 
 ---
 
+## Team
+
+- **Haven Leno J** ([GitHub](https://github.com/HavenLeno22))
+- **Manoj Kanna J**
+- **Yakash Pandi A**
+
+---
+
 ## License
 
-Proprietary. All rights reserved. The source is published for viewing, and no
-licence to use, copy or redistribute it is granted.
+[MIT](LICENSE)

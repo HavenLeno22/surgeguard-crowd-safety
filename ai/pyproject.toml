@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "SurgeGuard AI Pipeline - transforms CCTV frames into structured crowd intelligence."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Proprietary" }
+license = { text = "MIT" }
 
 # ---------------------------------------------------------------------------
 # The AI Pipeline is an INDEPENDENT package (07:99-103).
